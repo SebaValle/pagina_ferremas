@@ -23,5 +23,5 @@ urlpatterns = [
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/productos/', include('productos.urls')), # <-- Agrega esta línea
+    path('api/', include('productos.urls')), # <-- Agrega esta línea
 ]

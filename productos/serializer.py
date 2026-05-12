@@ -1,16 +1,19 @@
 from rest_framework import serializers
-from .models import Producto, Categoria, InventarioSucursal
+from .models import Producto, Sucursales, InventarioSucursal
 
 class ProductoSerializer(serializers.ModelSerializer):
-    categoria_nombre = serializers.ReadOnlyField(source='categoria.nombre')
-    
     class Meta:
         model = Producto
-        fields = ['id', 'nombre', 'precio', 'categoria', 'categoria_nombre', 'proveedor']
+        fields = '__all__'
+
+class SucursalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sucursales 
+        fields = '__all__'
 
 class InventarioSerializer(serializers.ModelSerializer):
     producto_nombre = serializers.ReadOnlyField(source='producto.nombre')
-    sucursal_nombre = serializers.ReadOnlyField(source='sucursal.nombre_sucursal')
+    sucursal_nombre = serializers.ReadOnlyField(source='sucursal.nombre')
 
     class Meta:
         model = InventarioSucursal
