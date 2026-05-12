@@ -4,7 +4,10 @@ from .models import Pedido, DetalleVenta
 class DetalleVentaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetalleVenta
-        fields = ['producto', 'cantidad', 'precio_unitario_historico']
+        # Incluimos todos los campos necesarios
+        fields = ['producto', 'cantidad', 'precio_unitario_historico', 'subtotal']
+        # Importante: Estos dos los calcula tu vista, no los envía el usuario
+        read_only_fields = ['precio_unitario_historico', 'subtotal']
 
 class PedidoSerializer(serializers.ModelSerializer):
     items = DetalleVentaSerializer(many=True)

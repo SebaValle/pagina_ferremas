@@ -4,13 +4,17 @@ from sucursales.models import Sucursales
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
-    def __str__(self): return self.nombre
+
+    def __str__(self): 
+        return self.nombre
 
 class Producto(models.Model):
     nombre = models.CharField(max_length=100)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
+    marca = models.CharField(max_length=50)
+    precio = models.IntegerField()
+    stock = models.IntegerField() # Stock general
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, null=True)
     codigo_sku = models.CharField(max_length=50, unique=True, default="N/A")
 
     def __str__(self):
@@ -24,8 +28,7 @@ class InventarioSucursal(models.Model):
     def __str__(self):
         return f"{self.producto.nombre} en {self.sucursal.nombre}"
 
-
-class DetalleProducto(models.Model): # <--- Asegúrate de que este nombre sea EXACTO
+class DetalleProducto(models.Model):
     producto = models.OneToOneField(Producto, on_delete=models.CASCADE, related_name='detalle')
     marca = models.CharField(max_length=50)
     modelo = models.CharField(max_length=50)

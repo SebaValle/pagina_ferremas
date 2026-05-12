@@ -1,10 +1,23 @@
 from rest_framework import serializers
-from .models import Producto, Sucursales, InventarioSucursal
+from .models import Producto, Sucursales, InventarioSucursal, Categoria, DetalleProducto
+
+class CategoriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categoria
+        fields = '__all__'
 
 class ProductoSerializer(serializers.ModelSerializer):
+    # Campos calculados para mostrar nombres en lugar de solo IDs
+    nombre_categoria = serializers.ReadOnlyField(source='categoria.nombre')
+    nombre_proveedor = serializers.ReadOnlyField(source='proveedor.nombre_empresa')
+
     class Meta:
         model = Producto
-        fields = '__all__'
+        fields = [
+            'id', 'nombre', 'marca', 'precio', 'stock', 
+            'categoria', 'nombre_categoria', 
+            'proveedor', 'nombre_proveedor'
+        ]
 
 class SucursalSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,3 +31,8 @@ class InventarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = InventarioSucursal
         fields = ['id', 'producto', 'producto_nombre', 'sucursal', 'sucursal_nombre', 'stock']
+
+class DetalleProductoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DetalleProducto
+        fields = '__all__'
