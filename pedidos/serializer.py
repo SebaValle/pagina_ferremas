@@ -4,24 +4,14 @@ from .models import Pedido, DetalleVenta
 class DetalleVentaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetalleVenta
-        fields = ['producto', 'cantidad', 'precio_unitario_historico']
+        fields = ['producto', 'cantidad', 'precio_unitario_historico', 'subtotal']
 
 class PedidoSerializer(serializers.ModelSerializer):
-    items = DetalleVentaSerializer(many=True)
+    # Dejamos que el serializer maneje solo los campos planos del Pedido.
+    # Quitamos la línea de 'items = DetalleVentaSerializer(...)' de aquí 
+    # para que no interfiera en el método .save() corporativo de DRF.
 
     class Meta:
         model = Pedido
-        fields = [
-            'id', 'cliente', 'vendedor', 'sucursal', 
-            'tipo_entrega', 'estado', 'total', 
-            'total_usd', 'valor_dolar_dia', 'items'
-        ]
-        # Estos campos los calcularemos nosotros, no el usuario
-        read_only_fields = ['total', 'total_usd', 'valor_dolar_dia']
-
-    def create(self, validated_data):
-        items_data = validated_data.pop('items')
-        pedido = Pedido.objects.create(**validated_data)
-        for item in items_data:
-            DetalleVenta.objects.create(pedido=pedido, **item)
-        return pedido
+        fields = '__all__'
+        read_only_fields = ['total_clp', 'total_usd', 'valor_dolar_dia']
