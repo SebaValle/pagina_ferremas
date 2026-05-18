@@ -6,7 +6,8 @@ from .utils import obtener_valor_dolar
 from productos.models import InventarioSucursal
 from django.db import transaction
 from rest_framework import serializers as drf_serializers
-
+from .models import OrdenBodega
+from .serializer import OrdenBodegaSerializer
 # IMPORTS REQUERIDOS PARA EL PDF (REPORTLAB)
 from django.http import HttpResponse
 from rest_framework.decorators import action
@@ -21,7 +22,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-<<<<<<< HEAD
+
         # 1. API Externa: Obtener el valor del dólar del día
         try:
             valor_dolar = obtener_valor_dolar()
@@ -35,18 +36,18 @@ class PedidoViewSet(viewsets.ModelViewSet):
 
         # 3. Validar y guardar Pedido base (Nace temporalmente en 0)
         serializer = self.get_serializer(data=data_pedido)
-=======
+
         # 1. API Externa: Obtener dólar
         valor_dolar = obtener_valor_dolar() or 950.0 
         
         # 2. Validar Pedido (Vendedor, Sucursal, Cliente)
         serializer = self.get_serializer(data=request.data)
->>>>>>> 62249d084109e205bebea6871b2e3bfd9b9df513
+
         serializer.is_valid(raise_exception=True)
         pedido = serializer.save(valor_dolar_dia=valor_dolar)
 
         total_acumulado = 0
-<<<<<<< HEAD
+
 
         # 4. Procesar y registrar cada ítem en el DetalleVenta
         for item in items_data:
@@ -59,7 +60,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
                 raise drf_serializers.ValidationError({
                     "error": f"El producto {item['producto']} no está registrado en la sucursal {pedido.sucursal.id}"
                 })
-=======
+
         # 3. EL FOR: Procesa cada producto del pedido
         items_data = request.data.get('items', [])
 
@@ -68,18 +69,18 @@ class PedidoViewSet(viewsets.ModelViewSet):
                 producto_id=item['producto'], 
                 sucursal=pedido.sucursal
             )
->>>>>>> 62249d084109e205bebea6871b2e3bfd9b9df513
+
             
             # Control de Stock
             if inv.stock >= item['cantidad']:
                 inv.stock -= item['cantidad']
                 inv.save()
                 
-<<<<<<< HEAD
+
                 precio_actual = inv.producto.precio
                 sub = precio_actual * item['cantidad']
                 
-=======
+
                 # Obtenemos el precio del producto
                 precio_actual = inv.producto.precio
                 sub = precio_actual * item['cantidad']
@@ -88,16 +89,16 @@ class PedidoViewSet(viewsets.ModelViewSet):
                 print(f"DEBUG: Precio encontrado: {precio_actual}") 
                 
                 # USAR EL NOMBRE EXACTO DEL MODELO
->>>>>>> 62249d084109e205bebea6871b2e3bfd9b9df513
+
                 DetalleVenta.objects.create(
                     pedido=pedido,
                     producto_id=item['producto'],
                     cantidad=item['cantidad'],
-<<<<<<< HEAD
+
                     precio_unitario_historico=precio_actual,
-=======
-                    precio_unitario_historico=precio_actual, 
->>>>>>> 62249d084109e205bebea6871b2e3bfd9b9df513
+
+                    
+
                     subtotal=sub
                 )
                 total_acumulado += sub
@@ -106,22 +107,26 @@ class PedidoViewSet(viewsets.ModelViewSet):
                     "error": f"No hay stock suficiente para {inv.producto.nombre}. Disponible: {inv.stock}"
                 })
 
-<<<<<<< HEAD
+
         # 5. Guardar totales convirtiendo explícitamente a float para compatibilidad con DecimalField
         pedido.total = float(total_acumulado)
-=======
+
         # 4. Guardar totales finales en el pedido
         pedido.total_clp = total_acumulado
         pedido.total_usd = float(total_acumulado) / valor_dolar
         pedido.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+  
         # 4. Guardar totales finales en el pedido
         pedido.total_clp = total_acumulado
->>>>>>> 62249d084109e205bebea6871b2e3bfd9b9df513
+
         pedido.total_usd = float(total_acumulado) / valor_dolar
         pedido.save()
+          # Asegúrate de que el modelo se importe correctamente
 
+        OrdenBodega.objects.create(
+            pedido=pedido,
+            instrucciones=f"Preparar productos para despacho tipo: {pedido.tipo_entrega}. Pedido N°: {pedido.id}"
+        )
         # Retornamos los datos frescos del objeto guardado
         serializer_final = self.get_serializer(pedido)
         return Response(serializer_final.data, status=status.HTTP_201_CREATED)
@@ -221,3 +226,8 @@ class PedidoViewSet(viewsets.ModelViewSet):
         # Construcción del PDF final
         doc.build(story)
         return response
+
+
+class OrdenBodegaViewSet(viewsets.ModelViewSet):
+    queryset = OrdenBodega.objects.all()
+    serializer_class = OrdenBodegaSerializer
