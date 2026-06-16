@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferremas - Panel de Ventas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; min-height: 100vh; }
+
+        /* HEADER DEL PORTAL INTERNO */
+        header { background-color: #278048; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .logo { font-size: 22px; font-weight: bold; }
+        .user-info { font-size: 14px; background-color: rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 4px; }
+        .btn-logout { color: white; text-decoration: none; margin-left: 15px; font-weight: bold; font-size: 13px; }
+
+        .dashboard-container { max-width: 1300px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        
+        @media (max-width: 992px) {
+            .dashboard-container { grid-template-columns: 1fr; }
+        }
+
+        .box { background: white; padding: 25px; border-radius: 8px; border: 1px solid #e4e6eb; box-shadow: 0 2px 8px rgba(0,0,0,0.02); margin-bottom: 30px; }
+        h2 { color: #1c1e21; font-size: 18px; margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid #f0f2f5; padding-bottom: 10px; }
+
+        /* MINI CARDS DE ESTADÍSTICAS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: #f8f9fa; border-left: 4px solid #278048; padding: 15px; border-radius: 4px; text-align: center; }
+        .stat-card p { font-size: 12px; color: #606770; text-transform: uppercase; font-weight: 600; }
+        .stat-card h3 { font-size: 22px; color: #1c1e21; margin-top: 5px; }
+
+        /* TABLAS */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid #e4e6eb; text-align: left; font-size: 13px; }
+        th { background-color: #fafafa; color: #606770; font-weight: 600; }
+        .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .status-pendiente { background-color: #ffeaa7; color: #d63031; }
+        .status-pagado { background-color: #badc58; color: #278048; }
+
+        /* FORMULARIO VENTA PRESENCIAL */
+        label { display: block; font-size: 13px; font-weight: 600; color: #4f5660; margin-top: 12px; margin-bottom: 6px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; outline: none; background-color: #f0f2f5; }
+        input:focus, select:focus { border-color: #278048; background-color: #fff; }
+        
+        .btn-add-item { background-color: #74b9ff; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; font-size: 12px; }
+        .btn-add-item:hover { background-color: #0984e3; }
+
+        .items-previa { background: #f8f9fa; padding: 10px; border-radius: 6px; margin-top: 15px; border: 1px dashed #ccd0d5; font-size: 13px; }
+
+        .btn-vender { background-color: #278048; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: bold; margin-top: 20px; transition: background 0.2s; }
+        .btn-vender:hover { background-color: #1e6337; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛠️ Ferremas Intranet — Portal Ventas</div>
+        <div class="user-info">
+            👤 Rol: <strong>Vendedor Presencial</strong>
+            <a href="/" class="btn-logout">[Salir]</a>
+        </div>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <div>
+            <div class="box">
+                <h2>📊 Monitor de Ventas (Por Sucursal)</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <p>Sucursal Santiago Centro</p>
+                        <h3 style="color: #0984e3;">$1.240.500</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p>Sucursal Maipú</p>
+                        <h3 style="color: #e67e22;">$890.000</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p>Sucursal Florida</p>
+                        <h3 style="color: #6c5ce7;">$654.200</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box">
+                <h2>📋 Pedidos del Sistema (Web y Presenciales)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Pedido</th>
+                            <th>Cliente (ID)</th>
+                            <th>Sucursal</th>
+                            <th>Entrega</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-pedidos-vendedor">
+                        <tr>
+                            <td><b>#1024</b></td>
+                            <td>Cliente 12 (Juan Pérez)</td>
+                            <td>Santiago Centro</td>
+                            <td>Retiro en tienda</td>
+                            <td><span class="status-badge status-pagado">Pagado</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>#1025</b></td>
+                            <td>Cliente 5 (Andrés Mora)</td>
+                            <td>Maipú</td>
+                            <td>Despacho</td>
+                            <td><span class="status-badge status-pendiente">Pendiente</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="box" style="height: fit-content;">
+            <h2>💰 Caja: Nueva Venta Presencial</h2>
+            
+            <form id="form-venta-directa" onsubmit="procesarVentaPresencial(event)">
+                <label for="cliente_id">ID del Cliente (Opcional, 1 por defecto)</label>
+                <input type="number" id="cliente_id" value="1" required>
+
+                <label for="sucursal_select">Sucursal Origen</label>
+                <select id="sucursal_select">
+                    <option value="1">Santiago Centro</option>
+                    <option value="2">Maipú</option>
+                    <option value="3">La Florida</option>
+                </select>
+
+                <label for="pago_select">Método de Pago</label>
+                <select id="pago_select">
+                    <option value="efectivo">💵 Efectivo (Pago inmediato en caja)</option>
+                    <option value="transferencia">🏦 Transferencia Bancaria</option>
+                </select>
+
+                <div style="border-top: 1px solid #f0f2f5; margin-top: 15px; padding-top: 10px;">
+                    <h4 style="font-size: 13px; color:#278048;">Añadir Ítems al mesón:</h4>
+                    
+                    <label for="prod_id">ID Producto</label>
+                    <input type="number" id="prod_id" placeholder="Ej: 1, 2, 3">
+                    
+                    <label for="prod_cant">Cantidad</label>
+                    <input type="number" id="prod_cant" value="1" min="1">
+                    
+                    <button type="button" class="btn-add-item" onclick="agregarItemALaVenta()">+ Agregar ítem a la fila</button>
+                </div>
+
+                <div class="items-previa">
+                    <strong>Detalle actual de la fila:</strong>
+                    <ul id="lista-items-vendedor" style="margin-left: 20px; margin-top: 5px;">
+                        </ul>
+                </div>
+
+                <button type="submit" class="btn-vender">📥 Confirmar Venta e Imprimir Comprobante</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // Array temporal para guardar los productos dictados en el mesón
+        let itemsVentaDirecta = [];
+
+        function agregarItemALaVenta() {
+            const prodId = parseInt(document.getElementById('prod_id').value);
+            const cantidad = parseInt(document.getElementById('prod_cant').value);
+
+            if (!prodId || cantidad <= 0) {
+                alert("Por favor ingresa un ID de producto válido y cantidad mayor a cero.");
+                return;
+            }
+
+            // Guardamos en la estructura que espera la API de Django
+            itemsVentaDirecta.push({
+                producto: prodId,
+                cantidad: cantidad
+            });
+
+            // Actualizamos la vista previa en pantalla
+            const lista = document.getElementById('lista-items-vendedor');
+            lista.innerHTML = "";
+            itemsVentaDirecta.forEach((item, index) => {
+                lista.innerHTML += `<li>Producto ID: ${item.producto} — Cantidad: ${item.cantidad}</li>`;
+            });
+
+            // Limpiamos los campos para el siguiente producto
+            document.getElementById('prod_id').value = "";
+            document.getElementById('prod_cant').value = "1";
+        }
+
+        function procesarVentaPresencial(event) {
+            event.preventDefault();
+
+            if (itemsVentaDirecta.length === 0) {
+                alert("No puedes procesar una venta sin ítems en el mesón.");
+                return;
+            }
+
+            const clienteId = document.getElementById('cliente_id').value;
+            const sucursalId = document.getElementById('sucursal_select').value;
+            const metodoPago = document.getElementById('pago_select').value;
+
+            // Armamos el JSON completo para enviar a Django
+            const payload = {
+                cliente: parseInt(clienteId),
+                vendedor: 2, // ID simulado del Vendedor logueado
+                sucursal: parseInt(sucursalId),
+                tipo_entrega: "retiro", // Presencial siempre es retiro inmediato
+                estado: "pagado",       // Al ser efectivo/transferencia directa pasa pagado de una
+                items: itemsVentaDirecta
+            };
+
+            // Enviamos la petición POST a tu API existente de Django
+            fetch('http://127.0.0.1:8000/api/pedidos/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error('No se pudo guardar la venta en la Base de Datos.');
+            })
+            .then(data => {
+                alert(`✨ ¡Venta Presencial Guardada con Éxito!\nPedido N°: ${data.id}\nEstado: PAGADO (Efectivo)\n\nEnviando orden de retiro a la cola del Bodeguero.`);
+                
+                // Limpiamos el formulario completo
+                itemsVentaDirecta = [];
+                document.getElementById('lista-items-vendedor').innerHTML = "";
+                document.getElementById('form-venta-directa').reset();
+            })
+            .catch(error => alert('Error en la venta: ' + error.message));
+        }
+
+        // Función opcional para traer los pedidos reales del backend a la tabla del dashboard
+        function cargarPedidosReales() {
+            fetch('http://127.0.0.1:8000/api/pedidos/')
+            .then(res => res.json())
+            .then(pedidos => {
+                const tbody = document.getElementById('tabla-pedidos-vendedor');
+                if(pedidos.length > 0) tbody.innerHTML = ""; // Limpia los quemados
+                
+                pedidos.forEach(p => {
+                    const statusClass = p.estado === 'pagado' ? 'status-pagado' : 'status-pendiente';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>#${p.id}</b></td>
+                            <td>Cliente ID: ${p.cliente}</td>
+                            <td>Sucursal ${p.sucursal}</td>
+                            <td>${p.tipo_entrega}</td>
+                            <td><span class="status-badge ${statusClass}">${p.estado}</span></td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(err => console.log("Cargando con simulación local o API desconectada."));
+        }
+
+        // Intentar traer los pedidos automáticos al entrar
+        cargarPedidosReales();
+    </script>
+</body>
+</html>

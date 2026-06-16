@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferremas - El hogar de tus herramientas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; min-height: 100vh; }
+
+        /* HEADER PRINCIPAL (Look Falabella) */
+        header { background-color: #ffffff; border-bottom: 1px solid #e4e6eb; position: sticky; top: 0; z-index: 1000; padding: 15px 20px; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+        .logo { font-size: 26px; font-weight: 800; color: #b0df1a; text-shadow: 1px 1px 1px #333; cursor: pointer; text-decoration: none; }
+        .logo span { color: #2c3e50; }
+        
+        .search-bar-container { flex: 1; max-width: 600px; display: flex; position: relative; }
+        .search-bar-container input { width: 100%; padding: 12px 40px 12px 15px; border: 1px solid #ccd0d5; border-radius: 25px; font-size: 14px; outline: none; background-color: #f0f2f5; }
+        .search-bar-container .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #7f8c8d; cursor: pointer; }
+
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .user-status { font-size: 13px; color: #606770; text-align: right; }
+        .user-status strong { color: #2c3e50; display: block; font-size: 14px; }
+        
+        .btn-carrito { background-color: #ffffff; border: 1px solid #ccd0d5; color: #2c3e50; padding: 10px 18px; font-size: 15px; border-radius: 25px; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 600; transition: background 0.2s; }
+        .btn-carrito:hover { background-color: #f2f3f5; }
+        .btn-carrito .badge { background-color: #ff3b30; color: white; border-radius: 5px; padding: 2px 6px; font-size: 12px; }
+
+        .main-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+
+        /* 1. HERO BANNER PRINCIPAL */
+        .hero-banner { background: linear-gradient(90deg, #ffffff 40%, #ebd7c5 100%); border-radius: 12px; display: flex; align-items: center; justify-content: space-between; padding: 40px 60px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); min-height: 280px; position: relative; overflow: hidden; }
+        .banner-text { max-width: 50%; }
+        .banner-text h1 { font-size: 38px; font-weight: 800; color: #1c1e21; line-height: 1.2; }
+        .banner-text h1 span { color: #e67e22; }
+        .banner-text p { font-size: 16px; color: #606770; margin: 15px 0 25px 0; }
+        .banner-text .tag-descuento { display: inline-block; background-color: #ff3b30; color: white; font-weight: bold; padding: 6px 12px; border-radius: 4px; font-size: 14px; margin-bottom: 15px; }
+        .banner-img-mock { font-size: 140px; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.15)); }
+
+        /* 2. CATEGORÍAS EN BURBUJAS CIRCULARES */
+        .categories-section { margin-bottom: 40px; }
+        .section-title { font-size: 20px; font-weight: 700; color: #1c1e21; margin-bottom: 20px; }
+        .categories-grid { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; justify-content: space-between; }
+        .category-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; text-decoration: none; min-width: 100px; }
+        .category-circle { width: 85px; height: 85px; background-color: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 36px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #e4e6eb; }
+        .category-item:hover .category-circle { transform: translateY(-5px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+        .category-item span { font-size: 13px; font-weight: 600; color: #4f5660; }
+
+        /* 3. GRILLA DE TARJETAS DE PRODUCTOS */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: #ffffff; border-radius: 8px; border: 1px solid #e4e6eb; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: box-shadow 0.2s; }
+        .product-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+        .product-img { height: 16px0px; display: flex; justify-content: center; align-items: center; font-size: 80px; margin-bottom: 15px; background: #fafafa; border-radius: 6px; }
+        .brand { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #90949c; font-weight: bold; }
+        .product-name { font-size: 14px; font-weight: 600; color: #1c1e21; margin: 4px 0; line-height: 1.4; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        
+        /* Estrellas decorativas de ranking */
+        .rating { color: #f39c12; font-size: 12px; margin-bottom: 10px; }
+        .rating span { color: #90949c; font-size: 11px; margin-left: 4px; }
+        
+        .price-box { margin-bottom: 15px; }
+        .current-price { font-size: 18px; font-weight: 700; color: #ff3b30; display: inline-block; }
+        .old-price { font-size: 12px; color: #90949c; text-decoration: line-through; margin-left: 6px; }
+        .badge-discount { background: #ff3b30; color: white; font-size: 10px; font-weight: bold; padding: 2px 4px; border-radius: 3px; margin-left: 5px; vertical-align: middle; }
+        
+        .btn-add { background-color: #0052cc; color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-add:hover { background-color: #0041a3; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <a href="/catalogo/" class="logo">🛠️ Ferre<span>mas</span></a>
+            
+            <div class="search-bar-container">
+                <input type="text" placeholder="Busca herramientas, taladros, maquinarias...">
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <div class="header-right">
+                <div class="user-status">
+                    Hola, <span id="nombre-usuario">Inicia sesión</span>
+                    <strong>Mi Cuenta v</strong>
+                </div>
+                <a href="/checkout/" class="btn-carrito">
+                    🛒 Carrito <span class="badge" id="contador-cart">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="hero-banner">
+            <div class="banner-text">
+                <span class="tag-descuento">ESPECIAL MES DEL PAPÁ</span>
+                <h1>¡Feliz día, <span>Maestro!</span></h1>
+                <p>Equípalo con lo mejor. Hasta 40% de descuento en herramientas profesionales DeWalt y Bosch con todo medio de pago.</p>
+            </div>
+            <div class="banner-img-mock">🧰</div>
+        </div>
+
+        <div class="categories-section">
+            <h2 class="section-title">Busca por categorías</h2>
+            <div class="categories-grid">
+                <div class="category-item">
+                    <div class="category-circle">⚡</div>
+                    <span>Eléctricas</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-circle">🔧</div>
+                    <span>Manuales</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-circle">🏗️</div>
+                    <span>Maquinaria</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-circle">🥽</div>
+                    <span>Seguridad</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-circle">🎨</div>
+                    <span>Pinturas</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-circle">💡</div>
+                    <span>Iluminación</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="products-section">
+            <h2 class="section-title">Los más vendidos en Herramientas</h2>
+            <div class="products-grid">
+                
+                <div class="product-card">
+                    <div>
+                        <div class="product-img">⚙️</div>
+                        <div class="brand">DEWALT</div>
+                        <div class="product-name">Taladro Percutor DeWalt 20V Max Profesional</div>
+                        <div class="rating">★★★★★ <span>4.8 (120)</span></div>
+                    </div>
+                    <div>
+                        <div class="price-box">
+                            <span class="current-price">$89.900</span>
+                            <span class="old-price">$129.990</span>
+                            <span class="badge-discount">-30%</span>
+                        </div>
+                        <button class="btn-add" onclick="agregarAlCarro(1, 'Taladro Percutor DeWalt 20V', 89900)">Agregar al carro</button>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div>
+                        <div class="product-img">🪚</div>
+                        <div class="brand">BOSCH</div>
+                        <div class="product-name">Esmeril Angular Bosch 4 1/2 Pulgadas 750W</div>
+                        <div class="rating">★★★★☆ <span>4.5 (84)</span></div>
+                    </div>
+                    <div>
+                        <div class="price-box">
+                            <span class="current-price">$65.000</span>
+                            <span class="old-price">$89.990</span>
+                            <span class="badge-discount">-27%</span>
+                        </div>
+                        <button class="btn-add" onclick="agregarAlCarro(2, 'Esmeril Angular Bosch', 65000)">Agregar al carro</button>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div>
+                        <div class="product-img">🧰</div>
+                        <div class="brand">STANLEY</div>
+                        <div class="product-name">Set de Herramientas Mecánicas Stanley 100 Piezas</div>
+                        <div class="rating">★★★★★ <span>4.9 (210)</span></div>
+                    </div>
+                    <div>
+                        <div class="price-box">
+                            <span class="current-price">$45.500</span>
+                            <span class="old-price">$75.990</span>
+                            <span class="badge-discount">-40%</span>
+                        </div>
+                        <button class="btn-add" onclick="agregarAlCarro(3, 'Set de Herramientas Stanley', 45500)">Agregar al carro</button>
+                    </div>
+                </div>
+
+                <div class="product-card">
+                    <div>
+                        <div class="product-img">📐</div>
+                        <div class="brand">MAKITA</div>
+                        <div class="product-name">Sierra Circular Makita de 7-1/4 Pulgadas 1800W</div>
+                        <div class="rating">★★★★☆ <span>4.7 (65)</span></div>
+                    </div>
+                    <div>
+                        <div class="price-box">
+                            <span class="current-price">$115.900</span>
+                            <span class="old-price">$149.990</span>
+                            <span class="badge-discount">-22%</span>
+                        </div>
+                        <button class="btn-add" onclick="agregarAlCarro(4, 'Sierra Circular Makita', 115900)">Agregar al carro</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+                // Array global del carrito (se mantiene en LocalStorage)
+        let carrito = JSON.parse(localStorage.getItem('carrito_ferremas')) || [];
+
+        function verificarSesion() {
+            const usuario = localStorage.getItem('usuario_logueado');
+            if (usuario) {
+                document.getElementById('nombre-usuario').innerText = usuario.split('@')[0];
+            }
+        }
+
+        function actualizarContador() {
+            const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            document.getElementById('contador-cart').innerText = totalItems;
+        }
+
+        // 🚀 NUEVA FUNCIÓN: TRAE LOS PRODUCTOS REALES DE TU BASE DE DATOS
+        function cargarProductosDesdeBD() {
+            // Apunta al endpoint real de tu Django para listar productos
+            fetch('http://127.0.0.1:8000/api/productos/') 
+                .then(response => {
+                    if (!response.ok) throw new Error("No se pudieron cargar los productos");
+                    return response.json();
+                })
+                .then(productos => {
+                    const grid = document.querySelector('.products-grid');
+                    grid.innerHTML = ""; // Limpiamos los productos de prueba que venían fijos
+
+                    // Recorremos los productos que vienen de tu Base de Datos
+                    productos.forEach(prod => {
+                        // Ajustamos el precio simulando un descuento decorativo estilo Falabella
+                        const precioReal = parseInt(prod.precio);
+                        const precioAntes = Math.round(precioReal * 1.3); 
+
+                        grid.innerHTML += `
+                            <div class="product-card">
+                                <div>
+                                    <div class="product-img">⚙️</div>
+                                    <div class="brand">${prod.marca || 'Generico'}</div>
+                                    <div class="product-name">${prod.nombre}</div>
+                                    <div class="rating">★★★★★ <span>4.5</span></div>
+                                </div>
+                                <div>
+                                    <div class="price-box">
+                                        <span class="current-price">$${precioReal.toLocaleString('es-CL')}</span>
+                                        <span class="old-price">$${precioAntes.toLocaleString('es-CL')}</span>
+                                        <span class="badge-discount">-30%</span>
+                                    </div>
+                                    <button class="btn-add" onclick="agregarAlCarro(${prod.id}, '${prod.nombre}', ${precioReal})">
+                                        Agregar al carro
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => {
+                    console.error("Error cargando BD:", error);
+                    // Si tu API falla o está vacía, dejamos un aviso amigable
+                    document.querySelector('.products-grid').innerHTML = 
+                        `<p style="grid-column: 1/-1; text-align:center; color:red;">No hay productos registrados en tu base de datos o falta activar el servidor.</p>`;
+                });
+        }
+
+        function agregarAlCarro(id, nombre, precio) {
+            const existe = carrito.find(item => item.id === id);
+            if (existe) {
+                existe.cantidad += 1;
+            } else {
+                carrito.push({ id, nombre, precio, cantidad: 1 });
+            }
+            localStorage.setItem('carrito_ferremas', JSON.stringify(carrito));
+            actualizarContador();
+            alert(`🛒 ${nombre} añadido correctamente.`);
+        }
+
+        // Ejecutar funciones al cargar la página
+        verificarSesion();
+        actualizarContador();
+        cargarProductosDesdeBD(); // 👈 Llamamos a tu base de datos al iniciar
+
+    </script>
+</body>
+</html>

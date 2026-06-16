@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>¡Compra Exitosa! - Ferremas</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f6f9; }
+        .exito-box { background: white; padding: 40px; display: inline-block; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #27ae60; }
+        .info { font-size: 18px; margin: 20px 0; color: #555; }
+        .btn-volver { background-color: #34495e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="exito-box">
+        <h1>✔ ¡Pago Confirmado Exitosamente!</h1>
+        <p class="info">Gracias por tu compra en Ferremas.</p>
+        
+        <p class="info"><strong>Pedido N°:</strong> <span id="num-pedido">...</span></p>
+        
+        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 30px;">
+            * Tu comprobante de factura ha sido emitido y la orden ya se encuentra en preparación en nuestra Bodega.
+        </p>
+
+        <a href="carrito.html" class="btn-volver">Volver a la Tienda</a>
+    </div>
+
+    <script>
+        // Leer el ID del pedido que pasamos desde la pantalla anterior
+        const urlParams = new URLSearchParams(window.location.search);
+        const pedidoId = urlParams.get('pedido_id');
+
+        if (pedidoId) {
+            document.getElementById('num-pedido').innerText = pedidoId;
+        } else {
+            document.getElementById('num-pedido').innerText = "N/A";
+        }
+    </script>
+</body>
+</html>

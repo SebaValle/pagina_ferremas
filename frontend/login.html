@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferremas - Iniciar Sesión</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .login-card { background: white; width: 100%; max-width: 480px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); overflow: hidden; padding: 40px 30px; position: relative; }
+        
+        /* Selector tipo pestaña para alternar */
+        .toggle-container { display: flex; background: #e4e6eb; border-radius: 30px; padding: 4px; margin-bottom: 30px; position: relative; }
+        .toggle-btn { flex: 1; border: none; background: transparent; padding: 12px; font-size: 15px; font-weight: 600; color: #555; cursor: pointer; border-radius: 26px; z-index: 2; transition: color 0.3s ease; }
+        .toggle-btn.active { color: white; }
+        
+        /* El fondo deslizante que se mueve al cambiar de rol */
+        .slider { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: calc(100% - 8px); background: #0052cc; border-radius: 26px; z-index: 1; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s; }
+        
+        .form-container { display: none; }
+        .form-container.active { display: block; animation: fadeIn 0.4s ease; }
+        
+        .header-section { text-align: center; margin-bottom: 25px; }
+        .header-section .icon { font-size: 45px; margin-bottom: 10px; }
+        .header-section h2 { font-size: 24px; color: #1c1e21; margin-bottom: 5px; }
+        .header-section p { font-size: 14px; color: #606770; }
+        
+        .input-group { margin-bottom: 18px; position: relative; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; color: #606770; margin-bottom: 6px; }
+        .input-group input { width: 100%; padding: 12px 16px; border: 1px solid #ccd0d5; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s; }
+        .input-group input:focus { border-color: #0052cc; }
+        
+        .options-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 20px; }
+        .options-row a { color: #0052cc; text-decoration: none; font-weight: 500; }
+        .options-row a:hover { text-decoration: underline; }
+        
+        .submit-btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; transition: background 0.2s; }
+        
+        /* Estilos específicos Cliente (Azul) */
+        .theme-cliente .slider { background: #0052cc; }
+        .theme-cliente .submit-btn { background: #0052cc; }
+        .theme-cliente .submit-btn:hover { background: #0041a3; }
+        
+        /* Estilos específicos Empleado (Verde como tu referencia) */
+        .theme-empleado .slider { transform: translateX(100%); background: #278048; }
+        .theme-empleado .submit-btn { background: #278048; }
+        .theme-empleado .submit-btn:hover { background: #1e6337; }
+        
+        .footer-action { border-top: 1px solid #e4e6eb; margin-top: 25px; padding-top: 20px; text-align: center; }
+        .outline-btn { background: transparent; border: 1px solid #ccd0d5; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; display: inline-flex; justify-content: center; align-items: center; gap: 8px; text-decoration: none; color: #1c1e21; }
+        .outline-btn:hover { background: #f2f3f5; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="theme-cliente" id="body-wrapper">
+
+    <div class="login-card">
+        <div class="toggle-container">
+            <div class="slider"></div>
+            <button class="toggle-btn active" id="btn-cliente" onclick="switchRole('cliente')">Cliente</button>
+            <button class="toggle-btn" id="btn-empleado" onclick="switchRole('empleado')">Empleado</button>
+        </div>
+
+        <div class="form-container active" id="form-cliente">
+            <div class="header-section">
+                <div class="icon" style="color: #0052cc;">👤👥</div>
+                <h2>Acceso para Cliente</h2>
+                <p>Inicia sesión para realizar tus pedidos de herramientas.</p>
+            </div>
+            <form onsubmit="handleLogin(event, 'cliente')">
+                <div class="input-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" placeholder="ejemplo@correo.com" required id="email-cliente">
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required id="pass-cliente">
+                </div>
+                <div class="options-row">
+                    <label><input type="checkbox"> Recordarme</label>
+                    <a href="#">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button type="submit" class="submit-btn">Iniciar sesión como cliente</button>
+            </form>
+            <div class="footer-action">
+                <button class="outline-btn">✨ Crear cuenta nueva</button>
+            </div>
+        </div>
+
+        <div class="form-container" id="form-empleado">
+            <div class="header-section">
+                <div class="icon" style="color: #278048;">💼</div>
+                <h2>Acceso para Empleado</h2>
+                <p>Portal interno para vendedores y bodegueros.</p>
+            </div>
+            <form onsubmit="handleLogin(event, 'empleado')">
+                <div class="input-group">
+                    <label>Correo corporativo o Usuario</label>
+                    <input type="text" placeholder="usuario_intranet" required id="user-empleado">
+                </div>
+                <div class="input-group">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••" required id="pass-empleado">
+                </div>
+                <div class="options-row">
+                    <label><input type="checkbox"> Recordarme</label>
+                    <a href="#" style="color: #278048;">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button type="submit" class="submit-btn">Iniciar sesión como empleado</button>
+            </form>
+            <div class="footer-action">
+                <button class="outline-btn" style="color: #278048;">🛡️ ¿Necesitas ayuda? Contacta a TI</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchRole(role) {
+            const wrapper = document.getElementById('body-wrapper');
+            const btnCliente = document.getElementById('btn-cliente');
+            const btnEmpleado = document.getElementById('btn-empleado');
+            const formCliente = document.getElementById('form-cliente');
+            const formEmpleado = document.getElementById('form-empleado');
+
+            if (role === 'cliente') {
+                wrapper.className = "theme-cliente";
+                btnCliente.classList.add('active');
+                btnEmpleado.classList.remove('active');
+                formCliente.classList.add('active');
+                formEmpleado.classList.remove('active');
+            } else {
+                wrapper.className = "theme-empleado";
+                btnEmpleado.classList.add('active');
+                btnCliente.classList.remove('active');
+                formEmpleado.classList.add('active');
+                formCliente.classList.remove('active');
+            }
+        }
+
+        function handleLogin(event, role) {
+            event.preventDefault();
+            
+            if (role === 'cliente') {
+                // Por ahora simulamos la redirección exitosa a la tienda
+                window.location.href = "/inicio/";
+            } else {
+                // Simulación para empleado (Vendedor/Bodeguero)
+                const username = document.getElementById('user-empleado').value;
+                
+                // Si contiene la palabra "bodega", simulamos que entra a bodega
+                if (username.includes('bodega')) {
+                    alert("Accediendo como Bodeguero...");
+                    window.location.href = "/panel-bodega/";
+                } else {
+                    alert("Accediendo como Vendedor...");
+                    window.location.href = "/panel-vendedor/";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

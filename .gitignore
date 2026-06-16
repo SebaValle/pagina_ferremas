@@ -13,3 +13,4 @@ __pycache__/
 # Carpetas de VS Code o IDEs
 .vscode/
 .idea/
+.DS_Store
