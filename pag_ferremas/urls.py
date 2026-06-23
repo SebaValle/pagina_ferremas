@@ -23,5 +23,7 @@ urlpatterns = [
     path('inicio/', TemplateView.as_view(template_name='index.html'), name='index'), # Raíz limpia
     path('checkout/', TemplateView.as_view(template_name='carrito.html'), name='tienda'), # <-- Cambiado a 'checkout/'
     path('checkout/exito/', TemplateView.as_view(template_name='exito.html'), name='exito'),
-    path('panel-vendedor/', TemplateView.as_view(template_name='vistaVendedor.html'), name='panel_vendedor')
+    path('panel-vendedor/', TemplateView.as_view(template_name='vistaVendedor.html'), name='panel_vendedor'),
+    path('panel-bodega/', TemplateView.as_view(template_name='bodega.html'), name='panel_bodega'),
+    path('panel-contador/', TemplateView.as_view(template_name='contador.html'), name='panel_contador'),
 ]

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferremas - Panel Contable y Finanzas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; padding-bottom: 60px; }
+        header { background-color: #2c3e50; color: white; padding: 15px 20px; }
+        .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 22px; font-weight: 800; color: #b0df1a; text-decoration: none; }
+        .logo span { color: white; }
+        .btn-logout { background: transparent; border: 1px solid #ff3b30; color: #ff3b30; padding: 6px 12px; border-radius: 4px; cursor: pointer; text-decoration: none; font-weight: bold; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+        .box { background: white; border: 1px solid #e4e6eb; border-radius: 8px; padding: 25px; }
+        .box.full { grid-column: 1 / -1; }
+        h2 { font-size: 20px; color: #2c3e50; margin-bottom: 15px; border-bottom: 2px solid #e4e6eb; padding-bottom: 8px; }
+        .kpi-box { background: #2c3e50; color: white; padding: 20px; border-radius: 8px; font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 20px; }
+        .kpi-box span { display: block; font-size: 14px; font-weight: 400; color: #b0df1a; margin-bottom: 5px; }
+        .tabla-contable { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        .tabla-contable th, .tabla-contable td { padding: 10px; border-bottom: 1px solid #e4e6eb; }
+        .tabla-contable th { background-color: #f8f9fa; color: #2c3e50; }
+        .tx-card { border: 1px solid #0052cc; background: #ebf5fe; padding: 15px; border-radius: 6px; margin-bottom: 12px; }
+        .btn-approve { background-color: #278048; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-reject { background-color: #ff3b30; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .form-control { width: 100%; padding: 8px; border: 1px solid #ccd0d5; border-radius: 6px; margin-bottom: 10px; }
+        .status-alert { padding: 10px; border-radius: 6px; font-weight: bold; text-align: center; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">🛠️ Ferre<span>mas Finanzas</span></a>
+            <a href="/" class="btn-logout">Cerrar Sesión</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="box full">
+            <h2>📈 Historial General de Ventas Consolidadas</h2>
+            <div class="kpi-box">
+                <span>INGRESOS NETOS EN CAJA CENTRAL</span>
+                <div id="monto-total">$0</div>
+            </div>
+            <table class="tabla-contable">
+                <thead>
+                    <tr>
+                        <th>ID Venta</th>
+                        <th>Productos Detalle</th>
+                        <th>Método Pago</th>
+                        <th>Total Liquidado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-ventas-body">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="box">
+            <h2>🏦 Auditoría de Transferencias Bancarias</h2>
+            <div id="contenedor-transferencias">
+                </div>
+        </div>
+
+        <div class="box">
+            <h2>📋 Evaluación Comercial de Proveedores</h2>
+            <div class="form-group">
+                <label style="font-size:13px; font-weight:600;">Seleccionar Proveedor</label>
+                <select id="prov-select" class="form-control">
+                    <option value="Distribuidora de Aceros Chile">Distribuidora de Aceros Chile</option>
+                    <option value="Herramientas Stanley Latam">Herramientas Stanley Latam</option>
+                    <option value="Importadora Industrial3M">Importadora Industrial 3M</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label style="font-size:13px; font-weight:600;">Calificación de Cumplimiento (1 al 7)</label>
+                <input type="number" id="prov-nota" class="form-control" min="1" max="7" value="5">
+            </div>
+            <button class="btn-approve" style="width:100%; padding:10px;" onclick="evaluarProveedor()">Guardar Valoración Comercial</button>
+            <div id="prov-resultado" class="status-alert" style="display:none;"></div>
+        </div>
+
+    </div>
+
+    <script>
+        function inicializarContador() {
+            cargarDashboardVentas();
+            cargarAuditoriaTransferencias();
+        }
+
+        function cargarDashboardVentas() {
+            let pedidos = JSON.parse(localStorage.getItem('pedidos_sistema')) || [];
+            const tbody = document.getElementById('tabla-ventas-body');
+            tbody.innerHTML = '';
+            
+            // Solo sumamos los cobros efectivos ya cerrados ("entregado")
+            let ventasCerradas = pedidos.filter(p => p.estado === 'entregado');
+            let ingresosTotales = ventasCerradas.reduce((sum, p) => sum + p.total, 0);
+
+            document.getElementById('monto-total').innerText = `$${ingresosTotales.toLocaleString('es-CL')}`;
+
+            if(ventasCerradas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#8d949e;">No se registran balances liquidados hoy.</td></tr>`;
+                return;
+            }
+
+            ventasCerradas.forEach(v => {
+                let detalle = v.items.map(i => `${i.producto_nombre} (x${i.cantidad})`).join(', ');
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>#${v.id}</strong></td>
+                        <td>${detalle}</td>
+                        <td style="text-transform:uppercase; font-size:12px;">⚡ ${v.metodo_pago}</td>
+                        <td style="font-weight:bold; color:#278048;">$${v.total.toLocaleString('es-CL')}</td>
+                    </tr>`;
+            });
+        }
+
+        function cargarAuditoriaTransferencias() {
+            let pedidos = JSON.parse(localStorage.getItem('pedidos_sistema')) || [];
+            const contenedor = document.getElementById('contenedor-transferencias');
+            contenedor.innerHTML = '';
+
+            let pendientesBco = pedidos.filter(p => p.estado === 'banco_pendiente');
+
+            if(pendientesBco.length === 0) {
+                contenedor.innerHTML = `<div style="text-align:center; padding:15px; color:#606770;">No hay transferencias pendientes en la cartola bancaria.</div>`;
+                return;
+            }
+
+            pendientesBco.forEach(p => {
+                contenedor.innerHTML += `
+                    <div class="tx-card">
+                        <div style="font-weight:bold; margin-bottom:5px;">Orden Ref: #${p.id} | Monto: $${p.total.toLocaleString('es-CL')}</div>
+                        <div style="font-size:13px; color:#4f5660; margin-bottom:10px;">
+                            <strong>Banco Cliente:</strong> ${p.transferencia_data.banco}<br>
+                            <strong>N° Operación:</strong> ${p.transferencia_data.codigo}
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn-approve" onclick="resolverTransferencia(${p.id}, 'pendiente')">✓ Aprobar Depósito</button>
+                            <button class="btn-reject" onclick="resolverTransferencia(${p.id}, 'banco_rechazado')">✕ Rechazar</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function resolverTransferencia(id, nuevoEstado) {
+            let pedidos = JSON.parse(localStorage.getItem('pedidos_sistema')) || [];
+            const pedido = pedidos.find(p => p.id === id);
+
+            if(pedido) {
+                pedido.estado = nuevoEstado; // 'pendiente' hace que el bodeguero lo vea listo para armar, 'banco_rechazado' frena la compra
+                localStorage.setItem('pedidos_sistema', JSON.stringify(pedidos));
+                alert(nuevoEstado === 'pendiente' ? '🟢 Depósito confirmado. Pedido enviado a preparación de Bodega.' : '🔴 Depósito rechazado. Venta congelada.');
+                inicializarContador();
+            }
+        }
+
+        function evaluarProveedor() {
+            const proveedor = document.getElementById('prov-select').value;
+            const nota = parseFloat(document.getElementById('prov-nota').value);
+            const resultado = document.getElementById('prov-resultado');
+
+            resultado.style.display = 'block';
+            if(nota >= 5.0) {
+                resultado.style.backgroundColor = '#d4edda';
+                resultado.style.color = '#155724';
+                resultado.innerText = `📈 Alerta Comercial: ${proveedor} aprobado con nota ${nota}. Se recomienda ampliar contratos de compra.`;
+            } else {
+                resultado.style.backgroundColor = '#fce8e6';
+                resultado.style.color = '#a80707';
+                resultado.innerText = `⚠️ Riesgo Operacional: ${proveedor} evaluado con nota ${nota}. Se sugiere congelar órdenes de compra.`;
+            }
+        }
+
+        window.onload = inicializarContador;
+    </script>
+</body>
+</html>

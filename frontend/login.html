@@ -3,159 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferremas - Iniciar Sesión</title>
+    <title>Ferremas - Portal de Acceso</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #1c1e21; }
         
-        .login-card { background: white; width: 100%; max-width: 480px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); overflow: hidden; padding: 40px 30px; position: relative; }
+        .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px; }
         
-        /* Selector tipo pestaña para alternar */
-        .toggle-container { display: flex; background: #e4e6eb; border-radius: 30px; padding: 4px; margin-bottom: 30px; position: relative; }
-        .toggle-btn { flex: 1; border: none; background: transparent; padding: 12px; font-size: 15px; font-weight: 600; color: #555; cursor: pointer; border-radius: 26px; z-index: 2; transition: color 0.3s ease; }
-        .toggle-btn.active { color: white; }
-        
-        /* El fondo deslizante que se mueve al cambiar de rol */
-        .slider { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: calc(100% - 8px); background: #0052cc; border-radius: 26px; z-index: 1; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s; }
-        
-        .form-container { display: none; }
-        .form-container.active { display: block; animation: fadeIn 0.4s ease; }
-        
-        .header-section { text-align: center; margin-bottom: 25px; }
-        .header-section .icon { font-size: 45px; margin-bottom: 10px; }
-        .header-section h2 { font-size: 24px; color: #1c1e21; margin-bottom: 5px; }
-        .header-section p { font-size: 14px; color: #606770; }
-        
-        .input-group { margin-bottom: 18px; position: relative; }
-        .input-group label { display: block; font-size: 13px; font-weight: 600; color: #606770; margin-bottom: 6px; }
-        .input-group input { width: 100%; padding: 12px 16px; border: 1px solid #ccd0d5; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s; }
-        .input-group input:focus { border-color: #0052cc; }
-        
-        .options-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 20px; }
-        .options-row a { color: #0052cc; text-decoration: none; font-weight: 500; }
-        .options-row a:hover { text-decoration: underline; }
-        
-        .submit-btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; transition: background 0.2s; }
-        
-        /* Estilos específicos Cliente (Azul) */
-        .theme-cliente .slider { background: #0052cc; }
-        .theme-cliente .submit-btn { background: #0052cc; }
-        .theme-cliente .submit-btn:hover { background: #0041a3; }
-        
-        /* Estilos específicos Empleado (Verde como tu referencia) */
-        .theme-empleado .slider { transform: translateX(100%); background: #278048; }
-        .theme-empleado .submit-btn { background: #278048; }
-        .theme-empleado .submit-btn:hover { background: #1e6337; }
-        
-        .footer-action { border-top: 1px solid #e4e6eb; margin-top: 25px; padding-top: 20px; text-align: center; }
-        .outline-btn { background: transparent; border: 1px solid #ccd0d5; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; display: inline-flex; justify-content: center; align-items: center; gap: 8px; text-decoration: none; color: #1c1e21; }
-        .outline-btn:hover { background: #f2f3f5; }
+        .logo { text-align: center; font-size: 32px; font-weight: 800; color: #b0df1a; text-shadow: 1px 1px 1px #333; margin-bottom: 25px; }
+        .logo span { color: #2c3e50; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        /* TABS PARA CAMBIAR DE ROL */
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e4e6eb; }
+        .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; font-weight: 600; color: #606770; transition: all 0.2s; }
+        .tab.active { color: #0052cc; border-bottom: 2px solid #0052cc; }
+
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+
+        /* FORMULARIOS */
+        label { display: block; font-size: 13px; font-weight: 600; color: #4f5660; margin-bottom: 6px; margin-top: 15px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; outline: none; background-color: #f0f2f5; transition: all 0.2s; }
+        input:focus { border-color: #0052cc; background-color: white; }
+
+        .btn-submit { width: 100%; background-color: #0052cc; color: white; border: none; padding: 14px; border-radius: 6px; font-size: 16px; font-weight: bold; margin-top: 25px; cursor: pointer; transition: background 0.2s; }
+        .btn-submit:hover { background-color: #004099; }
+        
+        .info-text { font-size: 12px; color: #8d949e; text-align: center; margin-top: 15px; }
     </style>
 </head>
-<body class="theme-cliente" id="body-wrapper">
+<body>
 
-    <div class="login-card">
-        <div class="toggle-container">
-            <div class="slider"></div>
-            <button class="toggle-btn active" id="btn-cliente" onclick="switchRole('cliente')">Cliente</button>
-            <button class="toggle-btn" id="btn-empleado" onclick="switchRole('empleado')">Empleado</button>
+    <div class="login-container">
+        <div class="logo">🛠️ Ferre<span>mas</span></div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('cliente')">🛒 Clientes</div>
+            <div class="tab" onclick="switchTab('empleado')">💼 Empleados</div>
         </div>
 
-        <div class="form-container active" id="form-cliente">
-            <div class="header-section">
-                <div class="icon" style="color: #0052cc;">👤👥</div>
-                <h2>Acceso para Cliente</h2>
-                <p>Inicia sesión para realizar tus pedidos de herramientas.</p>
-            </div>
+        <div id="section-cliente" class="form-section active">
             <form onsubmit="handleLogin(event, 'cliente')">
-                <div class="input-group">
-                    <label>Correo electrónico</label>
-                    <input type="email" placeholder="ejemplo@correo.com" required id="email-cliente">
-                </div>
-                <div class="input-group">
-                    <label>Contraseña</label>
-                    <input type="password" placeholder="••••••••" required id="pass-cliente">
-                </div>
-                <div class="options-row">
-                    <label><input type="checkbox"> Recordarme</label>
-                    <a href="#">¿Olvidaste tu contraseña?</a>
-                </div>
-                <button type="submit" class="submit-btn">Iniciar sesión como cliente</button>
+                <label for="email-cliente">Correo Electrónico</label>
+                <input type="email" id="email-cliente" placeholder="ejemplo@correo.com">
+                
+                <label for="pass-cliente">Contraseña</label>
+                <input type="password" id="pass-cliente" placeholder="••••••••">
+                
+                <button type="submit" class="btn-submit">Ingresar al Catálogo</button>
             </form>
-            <div class="footer-action">
-                <button class="outline-btn">✨ Crear cuenta nueva</button>
-            </div>
+            <p class="info-text">Portal seguro de acceso para clientes registrados.</p>
         </div>
 
-        <div class="form-container" id="form-empleado">
-            <div class="header-section">
-                <div class="icon" style="color: #278048;">💼</div>
-                <h2>Acceso para Empleado</h2>
-                <p>Portal interno para vendedores y bodegueros.</p>
-            </div>
+        <div id="section-empleado" class="form-section">
             <form onsubmit="handleLogin(event, 'empleado')">
-                <div class="input-group">
-                    <label>Correo corporativo o Usuario</label>
-                    <input type="text" placeholder="usuario_intranet" required id="user-empleado">
-                </div>
-                <div class="input-group">
-                    <label>Contraseña</label>
-                    <input type="password" placeholder="••••••••" required id="pass-empleado">
-                </div>
-                <div class="options-row">
-                    <label><input type="checkbox"> Recordarme</label>
-                    <a href="#" style="color: #278048;">¿Olvidaste tu contraseña?</a>
-                </div>
-                <button type="submit" class="submit-btn">Iniciar sesión como empleado</button>
+                <label for="user-empleado">Usuario Corporativo</label>
+                <input type="text" id="user-empleado" placeholder="Ej: usuario_intranet">
+
+                <label for="pass-empleado">Contraseña</label>
+                <input type="password" id="pass-empleado" placeholder="••••••••">
+                
+                <button type="submit" class="btn-submit" style="background-color: #2c3e50;">Acceder a Intranet</button>
             </form>
-            <div class="footer-action">
-                <button class="outline-btn" style="color: #278048;">🛡️ ¿Necesitas ayuda? Contacta a TI</button>
-            </div>
+            <p class="info-text">Acceso restringido solo para personal autorizado.</p>
         </div>
     </div>
 
     <script>
-        function switchRole(role) {
-            const wrapper = document.getElementById('body-wrapper');
-            const btnCliente = document.getElementById('btn-cliente');
-            const btnEmpleado = document.getElementById('btn-empleado');
-            const formCliente = document.getElementById('form-cliente');
-            const formEmpleado = document.getElementById('form-empleado');
+        function switchTab(role) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
 
             if (role === 'cliente') {
-                wrapper.className = "theme-cliente";
-                btnCliente.classList.add('active');
-                btnEmpleado.classList.remove('active');
-                formCliente.classList.add('active');
-                formEmpleado.classList.remove('active');
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('section-cliente').classList.add('active');
             } else {
-                wrapper.className = "theme-empleado";
-                btnEmpleado.classList.add('active');
-                btnCliente.classList.remove('active');
-                formEmpleado.classList.add('active');
-                formCliente.classList.remove('active');
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('section-empleado').classList.add('active');
             }
         }
+
+        // 👥 BASE DE DATOS DE CLIENTES AUTORIZADOS
+        const CLIENTES_VALIDOS = {
+            "seba@gmail.com": { clave: "cliente123" },
+            "profesor@duoc.cl": { clave: "cliente123" },
+            "marcela.p@gmail.com": { clave: "ferremas2026" },
+            "jorgue_mu@gmai.com": { clave: "ferremas2026" }
+        };
+
+        // 🔑 BASE DE DATOS DE EMPLEADOS AUTORIZADOS
+        const EMPLEADOS_VALIDOS = {
+            "vendedor": { clave: "123", vista: "/panel-vendedor/" },
+            "bodega":   { clave: "123", vista: "/panel-bodega/" },
+            "contador": { clave: "123", vista: "/panel-contador/" }
+        };
 
         function handleLogin(event, role) {
             event.preventDefault();
             
             if (role === 'cliente') {
-                // Por ahora simulamos la redirección exitosa a la tienda
-                window.location.href = "/inicio/";
-            } else {
-                // Simulación para empleado (Vendedor/Bodeguero)
-                const username = document.getElementById('user-empleado').value;
+                const emailInput = document.getElementById('email-cliente').value.trim();
+                const passInput = document.getElementById('pass-cliente').value;
+
+                if (!emailInput || !passInput) {
+                    alert("⚠️ Por favor, ingrese su correo y contraseña.");
+                    return;
+                }
+
+                // Validación local directa e infalible
+                const cliente = CLIENTES_VALIDOS[emailInput];
                 
-                // Si contiene la palabra "bodega", simulamos que entra a bodega
-                if (username.includes('bodega')) {
-                    alert("Accediendo como Bodeguero...");
-                    window.location.href = "/panel-bodega/";
+                if (cliente && cliente.clave === passInput) {
+                    localStorage.setItem('usuario_logueado', emailInput);
+                    window.location.href = "/inicio"; // Redirección directa a la raíz/inicio
                 } else {
-                    alert("Accediendo como Vendedor...");
-                    window.location.href = "/panel-vendedor/";
+                    alert("❌ Correo electrónico o contraseña incorrectos. Por favor, inténtelo de nuevo.");
+                }
+
+            } else {
+                const userInput = document.getElementById('user-empleado').value.trim().toLowerCase();
+                const passInput = document.getElementById('pass-empleado').value;
+
+                if (!userInput || !passInput) {
+                    alert("⚠️ Por favor, ingrese su usuario y contraseña corporativa.");
+                    return;
+                }
+
+                const empleado = EMPLEADOS_VALIDOS[userInput];
+
+                if (empleado && empleado.clave === passInput) {
+                    localStorage.setItem('empleado_logueado', userInput);
+                    window.location.href = empleado.vista; 
+                } else {
+                    alert("❌ Credenciales incorrectas. Nombre de usuario o contraseña corporativa no válidos.");
                 }
             }
         }
